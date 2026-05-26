@@ -1,104 +1,57 @@
-protobuf-ts [![npm](https://img.shields.io/npm/v/@protobuf-ts/plugin?x)](https://www.npmjs.com/package/@protobuf-ts/plugin)
-===========
+# React + TypeScript + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-[Protocol buffers](https://developers.google.com/protocol-buffers) 
-and [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) 
-for Node.js and the Web Browser. 
-Pure TypeScript.
+Currently, two official plugins are available:
 
-For the following `.proto` file:
-```proto
-syntax = "proto3";
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-message Person {
-    string name = 1;
-    uint64 id = 2;
-    int32 years = 3;
-    optional bytes data = 5;
-}
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-`protobuf-ts` generates code that can be used like this:
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```typescript
-let pete: Person = {
-    name: "pete", 
-    id: 123n, // it's a bigint
-    years: 30
-    // data: new Uint8Array([0xDE, 0xAD, 0xBE, 0xEF]);
-};
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-let bytes = Person.toBinary(pete);
-pete = Person.fromBinary(bytes);
-
-pete = Person.fromJsonString('{"name":"pete", "id":"123", "years": 30}')
+export default tseslint.config({
+  extends: [
+    // other configs...
+    // Enable lint rules for React
+    reactX.configs['recommended-typescript'],
+    // Enable lint rules for React DOM
+    reactDom.configs.recommended,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
-
-### What are protocol buffers?
-
-Protocol buffers is an [interface definition language](https://en.wikipedia.org/wiki/Interface_description_language) 
-and binary serialization format.  
-Data structures defined in `.proto` files are platform-independent and can 
-be used in many languages.  
-To learn more about the capabilities, please check the
-official [language guide](https://developers.google.com/protocol-buffers/docs/overview).
-
-
-### Quickstart
-
-- `npm install @protobuf-ts/plugin`
-  > installs the plugin and the compiler "protoc"  
-
-- download the example file [msg-readme.proto](https://raw.githubusercontent.com/timostamm/protobuf-ts/main/packages/proto/msg-readme.proto) and place it into a `protos/` directory
-
-- `npx protoc --ts_out . --proto_path protos protos/msg-readme.proto`
-  > generates msg-readme.ts  
-  > if your protoc version asks for it, add the flag "--experimental_allow_proto3_optional"
-
-
-### Features
-
-- [x] implements the [canonical proto3 JSON format](MANUAL.md#json-format)
-- [x] implements the [binary format](MANUAL.md#binary-format) and respects [unknown fields](MANUAL.md#unknown-field-handling)
-- [x] strictly [conforms to the protobuf spec](MANUAL.md#conformance)
-- [x] generates clients that can be used with the [gRPC web](MANUAL.md#grpc-web-transport), 
-      [Twirp](MANUAL.md#twirp-transport) or [gRPC](MANUAL.md#grpc-transport) protocol
-- [x] generates [native gRPC servers](MANUAL.md#native-grpc-server) and 
-      [clients](MANUAL.md#native-grpc-client) for usage with `@grpc/grpc-js`
-- [x] supported by [Twirp-TS](https://github.com/hopin-team/twirp-ts) for Twirp servers running on Node.js
-- [x] automatically [installs protoc](./packages/protoc/README.md) (with Yarn berry, please use [node-protoc](https://www.npmjs.com/package/node-protoc))
-- [x] can optimize for [speed or code size](MANUAL.md#code-size-vs-speed)  
-- [x] supports [proto3 optionals](MANUAL.md#proto3-optionals)
-- [x] [supports bigint](MANUAL.md#bigint-support) for 64 bit integers
-- [x] every [message type](MANUAL.md#imessagetype) has methods to compare, clone, merge and type guard messages
-- [x] provides [reflection information](MANUAL.md#reflection), 
-  including [custom options](MANUAL.md#custom-options)
-- [x] supports all [well-known-types](MANUAL.md#well-known-types) with custom JSON representation and helper methods
-- [x] uses standard [TypeScript enums](MANUAL.md#enum-representation)
-- [x] runs [in the Web Browser](MANUAL.md#running-in-the-web-browser) and in [Node.js](MANUAL.md#running-in-nodejs)
-- [x] uses an [algebraic data type for oneof](MANUAL.md#oneof-representation) groups
-- [x] can generate TypeScript [or JavaScript](MANUAL.md#outputting-javascript)
-- [x] available as a [plugin on the BSR](https://github.com/timostamm/protobuf-ts/tree/master/packages/bsr-plugin)
-- [x] can be [used with buf](https://github.com/timostamm/protobuf-ts/issues/93)
-
-
-Read the [MANUAL](MANUAL.md) to learn more.
-
-
-
-
-### Copyright
-
-- The [code to decode UTF8](./packages/runtime/src/protobufjs-utf8.ts) is Copyright 2016 by Daniel Wirtz, licensed under BSD-3-Clause.
-- The [code to encode and decode varint](./packages/runtime/src/goog-varint.ts) is Copyright 2008 Google Inc., licensed under BSD-3-Clause.
-- The files [plugin.ts](./packages/plugin-framework/src/google/protobuf/compiler/plugin.ts) and [descriptor.ts](./packages/plugin-framework/src/google/protobuf/descriptor.ts) are Copyright 2008 Google Inc., licensed under BSD-3-Clause
-- The [gRPC status codes](./packages/grpcweb-transport/src/goog-grpc-status-code.ts) are Copyright 2016 gRPC authors, licensed under Apache-2.0.
-- The [Twirp error codes](./packages/twirp-transport/src/twitch-twirp-error-code.ts) are Copyright 2018 Twitch Interactive, Inc., licensed under Apache-2.0.
-- The proto files in [proto/google](./packages/proto/google) and [test-conformance/proto](./packages/test-conformance/proto) are Copyright Google Inc. / Google LLC, licensed under Apache-2.0 / BSD-3-Clause.
-- All other files are licensed under Apache-2.0, see [LICENSE](./LICENSE). 
-
-
-### Support
-
-<a href="https://www.buymeacoffee.com/timostamm" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="109" height="30" ></a>
